@@ -1,103 +1,149 @@
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, PieChart, Pie, Cell } from 'recharts';
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
+  PieChart, Pie, Cell, LineChart, Line
+} from 'recharts';
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+const COLORS = ['#2563EB', '#10B981', '#F59E0B', '#EF4444'];
 
-const mockBarData = [
-  { project: 'Project A', tokens: 4000 },
-  { project: 'Project B', tokens: 3000 },
-  { project: 'Project C', tokens: 2000 },
-  { project: 'Project D', tokens: 2780 },
+const tokenCostData = [
+  { department: 'HR', cost: 14000 },
+  { department: 'Engineering', cost: 23000 },
+  { department: 'Operations', cost: 11000 },
+  { department: 'Support', cost: 18000 }
 ];
 
-const mockPieData = [
-  { name: 'Basic RAG', value: 400 },
-  { name: 'Multi-Vector', value: 300 },
-  { name: 'Hybrid Search', value: 300 },
-  { name: 'Agent RAG', value: 200 },
+const usageData = [
+  { department: 'Engineering', activeUsers: 120 },
+  { department: 'Support', activeUsers: 95 },
+  { department: 'HR', activeUsers: 45 },
+  { department: 'Operations', activeUsers: 70 }
+];
+
+const governancePie = [
+  { name: 'Strict Policy', value: 45 },
+  { name: 'Audit Only', value: 30 },
+  { name: 'Lenient', value: 25 }
+];
+
+const alertsTrend = [
+  { day: 'Mon', alerts: 12 },
+  { day: 'Tue', alerts: 9 },
+  { day: 'Wed', alerts: 15 },
+  { day: 'Thu', alerts: 10 },
+  { day: 'Fri', alerts: 7 },
 ];
 
 export const Dashboard = () => {
   return (
-    <div className="space-y-6">
-      {/* Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="p-6 bg-white rounded-xl shadow-sm dark:bg-slate-800">
-          <h3 className="text-lg font-medium text-slate-900 dark:text-white">Total Projects</h3>
-          <p className="text-3xl font-bold mt-2 text-blue-600">24</p>
+    <div className="space-y-10">
+      
+      {/* KPI CARDS */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        {[
+          { title: 'Successful Answer Rate', value: '92%', color: 'text-green-600' },
+          { title: 'Avg Time Saved / Query', value: '18s', color: 'text-blue-600' },
+          { title: 'Estimated Cost Savings (7d)', value: '$32K', color: 'text-teal-600' },
+          { title: 'Active Users (7d)', value: '265', color: 'text-purple-600' }
+        ].map((item, idx) => (
+          <div key={idx} className="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm">
+            <h3 className="text-sm font-medium text-slate-600 dark:text-slate-300">
+              {item.title}
+            </h3>
+            <p className={`text-3xl font-bold mt-2 ${item.color}`}>
+              {item.value}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      {/* CHART ROW */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        {/* Cost by Department */}
+        <div className="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm">
+          <h3 className="text-lg font-semibold mb-4">Cost by Department (USD)</h3>
+          <BarChart width={450} height={300} data={tokenCostData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="department" />
+            <YAxis />
+            <Tooltip />
+            <Bar dataKey="cost" fill="#2563EB" />
+          </BarChart>
         </div>
-        <div className="p-6 bg-white rounded-xl shadow-sm dark:bg-slate-800">
-          <h3 className="text-lg font-medium text-slate-900 dark:text-white">Active RAGs</h3>
-          <p className="text-3xl font-bold mt-2 text-green-600">12</p>
-        </div>
-        <div className="p-6 bg-white rounded-xl shadow-sm dark:bg-slate-800">
-          <h3 className="text-lg font-medium text-slate-900 dark:text-white">Token Usage (7d)</h3>
-          <p className="text-3xl font-bold mt-2 text-purple-600">1.2M</p>
+
+        {/* Adoption by Department */}
+        <div className="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm">
+          <h3 className="text-lg font-semibold mb-4">AI Adoption by Users</h3>
+          <LineChart width={450} height={300} data={usageData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="department" />
+            <YAxis />
+            <Tooltip />
+            <Line type="monotone" dataKey="activeUsers" stroke="#10B981" strokeWidth={3} />
+          </LineChart>
         </div>
       </div>
 
-      {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="p-6 bg-white rounded-xl shadow-sm dark:bg-slate-800">
-          <h3 className="text-lg font-medium mb-4 text-slate-900 dark:text-white">Token Usage by Project</h3>
-          <BarChart width={500} height={300} data={mockBarData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="project" />
-            <YAxis />
-            <Tooltip />
-            {/* Legend removed to avoid type mismatch with current recharts types */}
-            <Bar dataKey="tokens" fill="#8884d8" />
-          </BarChart>
-        </div>
+      {/* COMPLIANCE + RISK */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
-        <div className="p-6 bg-white rounded-xl shadow-sm dark:bg-slate-800">
-          <h3 className="text-lg font-medium mb-4 text-slate-900 dark:text-white">RAG Strategy Distribution</h3>
-          <PieChart width={400} height={300}>
+        {/* Governance Policy Distribution */}
+        <div className="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm">
+          <h3 className="text-lg font-semibold mb-4">Compliance Policy Distribution</h3>
+          <PieChart width={400} height={250}>
             <Pie
-              data={mockPieData}
+              data={governancePie}
               cx={200}
-              cy={150}
-              labelLine={false}
-              label={(entry: any) => `${entry.name} ${Math.round((entry.percent || 0) * 100)}%`}
-              outerRadius={100}
-              fill="#8884d8"
+              cy={120}
               dataKey="value"
+              outerRadius={80}
+              label
             >
-              {mockPieData.map((_, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              {governancePie.map((_, index) => (
+                <Cell key={index} fill={COLORS[index % COLORS.length]} />
               ))}
             </Pie>
             <Tooltip />
           </PieChart>
         </div>
+
+        {/* Governance Alerts Trend */}
+        <div className="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm">
+          <h3 className="text-lg font-semibold mb-4">Governance Alerts (7d)</h3>
+          <LineChart width={450} height={250} data={alertsTrend}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="day" />
+            <YAxis />
+            <Tooltip />
+            <Line type="monotone" dataKey="alerts" stroke="#EF4444" strokeWidth={3} />
+          </LineChart>
+        </div>
       </div>
 
-      {/* Top Projects Table */}
-      <div className="p-6 bg-white rounded-xl shadow-sm dark:bg-slate-800">
-        <h3 className="text-lg font-medium mb-4 text-slate-900 dark:text-white">Top Projects</h3>
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
-            <thead>
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Project</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Department</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Usage</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
-              <tr>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900 dark:text-white">Customer Support RAG</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">Support</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">450K tokens</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                    Active
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      {/* LEADERBOARD */}
+      <div className="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm">
+        <h3 className="text-lg font-semibold mb-4">Business Impact Leaderboard</h3>
+        <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+          <thead>
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase">Department</th>
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase">Hours Saved</th>
+              <th className="px-6 py-3 text-left text-xs font-medium uppercase">Efficiency Uplift</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr className="text-sm">
+              <td className="px-6 py-4">Engineering</td>
+              <td className="px-6 py-4">1,240h</td>
+              <td className="px-6 py-4 text-green-600 font-semibold">+32%</td>
+            </tr>
+            <tr className="text-sm">
+              <td className="px-6 py-4">Support</td>
+              <td className="px-6 py-4">980h</td>
+              <td className="px-6 py-4 text-green-600 font-semibold">+27%</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   );
